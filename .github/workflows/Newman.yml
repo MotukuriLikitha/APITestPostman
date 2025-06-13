@@ -1,0 +1,40 @@
+name: Run Newman Postman Collection on Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run_newman:
+    runs-on: windows-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js (since Newman requires Node.js)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install dependencies (Newman)
+      - name: Install Newman
+        run: npm install -g newman
+
+      # Step 4: Run the Postman collection using Newman
+      - name: Run Postman Collection
+        run: |
+          newman run ./your-collection.json --environment ./your-environment.json --reporters cli,html --reporter-html-export ./newman-report.html
+
+      # Step 5: Upload the HTML report as an artifact
+      - name: Upload HTML Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: newman-report
+          path: ./newman-report.html
